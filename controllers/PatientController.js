@@ -8,13 +8,30 @@ mongoose.set("useFindAndModify", false);
  *
  * @returns {Object}
  */
-exports.patientList = (req, res) => {
+exports.patientList = async (req, res) => {
   try {
-    Patient.find().then((patients) => {
+    const limit = req.query.limit ? parseInt(req.query.limit) : 10;
+    const pageNumber = req.query.page ? parseInt(req.query.page) : 1;
+    let searchObj = {}
+    if(req.query.onlyCritical){
+      searchObj.condition = 'critical'
+    }
+    let query = Patient.find(searchObj);
+    query.sort({ createdAt: 1 });
+    if (req.query.page) {
+      query.skip((pageNumber - 1) * limit);
+      query.limit(limit);
+    }
+    const count = await Patient.count(searchObj)
+    let currentPage = pageNumber
+    let totalCount = count
+    let itemPerPage = limit
+    let totalPage = Math.ceil(totalCount/itemPerPage)
+    query.then((patients) => {
       if (patients.length > 0) {
-        return apiResponse.successResponseWithData(res, "success", patients);
+        return apiResponse.successResponseWithData(res, "success", {data: patients , totalPage, currentPage, itemPerPage, totalCount, count:patients.length});
       } else {
-        return apiResponse.successResponseWithData(res, "success", []);
+        return apiResponse.notFoundResponse(res, "Data not found");
       }
     });
   } catch (err) {
@@ -56,8 +73,15 @@ exports.patientDetail = (req, res) => {
  *
  * @returns {Object}
  */
-exports.patientStore = (req, res) => {
+exports.patientStore = async (req, res) => {
   try {
+    const existPatient = await Patient.findOne({ email: req.body.email });
+    if (existPatient) {
+      return apiResponse.validationErrorWithData(
+        res,
+        "Patient with same email already exist"
+      );
+    }
     var patient = new Patient({
       first_name: req.body.first_name,
       last_name: req.body.last_name,
@@ -122,6 +146,9 @@ exports.patientUpdate = (req, res) => {
           }
           if (req.body.address) {
             foundPatient.address = req.body.address;
+          }
+          if (req.body.gender) {
+            foundPatient.gender = req.body.gender;
           }
           //update patient.
           Patient.findByIdAndUpdate(

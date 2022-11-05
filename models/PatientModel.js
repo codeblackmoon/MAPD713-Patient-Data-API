@@ -9,7 +9,8 @@ var PatientSchema = new Schema({
 	mobile: {type: String},
 	gender: {type: String},
 	age: {type: Number},
-	address: {type: String}
+	address: {type: String},
+	condition: {type: String, enum: ['normal', 'critical'], default:'normal'},
 }, {timestamps: true});
 
 module.exports = mongoose.model("Patient", PatientSchema);

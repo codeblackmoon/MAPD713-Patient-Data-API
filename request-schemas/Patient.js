@@ -50,3 +50,28 @@ exports.createPatientSchema = {
         errorMessage: "Address field cannot be empty"
     },
 }
+
+exports.patientListSchema = {
+    page:{
+        optional: { options: { nullable: true } },
+        isInt:{
+            options:{ min: 1},
+            errorMessage: "Invalid Page value"
+        },
+    },
+    limit:{
+        optional: { options: { nullable: true } },
+        isInt:{
+            options:{ min: 1},
+            errorMessage: "Invalid limit value"
+        },
+    },
+    onlyCritical:{
+        optional: { options: { nullable: true } },
+        isBoolean:{
+            errorMessage: "Invalid parameter"
+        },
+        toBoolean: true
+    }
+    
+}

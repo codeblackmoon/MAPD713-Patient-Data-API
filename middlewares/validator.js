@@ -9,8 +9,12 @@ exports.validate = (validations) => {
             return next();
         }
 
-        res.status(400).json({
-            errors: errors.array()
-        });
+        
+        var resData = {
+            status: 0,
+            message: "Bad Request",
+            data: errors.array({onlyFirstError: true})
+        };
+        return res.status(400).json(resData);
     };
 };
