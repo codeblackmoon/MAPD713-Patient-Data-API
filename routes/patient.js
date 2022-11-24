@@ -2,7 +2,7 @@ var express = require("express");
 const { checkSchema } = require("express-validator");
 const PatientController = require("../controllers/PatientController");
 const { validate } = require("../middlewares/validator");
-const { createPatientSchema, updatePatientSchema, patientListSchema } = require("../request-schemas/patient");
+const { createPatientSchema, updatePatientSchema, patientListSchema } = require("../request-schemas/Patient");
 
 var router = express.Router();
 
