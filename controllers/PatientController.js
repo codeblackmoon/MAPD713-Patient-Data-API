@@ -154,7 +154,7 @@ exports.patientUpdate = (req, res) => {
           Patient.findByIdAndUpdate(
             req.params.id,
             foundPatient,
-            {},
+            {new: true},
             function (err) {
               if (err) {
                 return apiResponse.ErrorResponse(res, err);
